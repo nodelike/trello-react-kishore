@@ -15,9 +15,9 @@ function Navbar() {
       <AppBar position="static" color="primary" sx={{px: 0, py: 1}}>
         <Toolbar style={{width: "80%", margin: "0 auto", padding:"0px"}}>
           <IconButton edge="start" style={{ marginRight: "15px"}} aria-label="logo" >
-            <FontAwesomeIcon style={{ color: theme.palette.primary.contrastText , fontSize: "2rem"}} icon={faTrello} />
+            <FontAwesomeIcon style={{ color: theme.palette.primary.accent , fontSize: "2.3rem"}} icon={faTrello} />
           </IconButton>
-          <Typography variant="h1" sx={{ flexGrow: 1 }} style={{textTransform: "uppercase", fontWeight: "700"}}>
+          <Typography variant="h1" sx={{ flexGrow: 1 }} style={{textTransform: "uppercase", fontWeight: "700",}}>
             Trello
           </Typography>
         </Toolbar>
