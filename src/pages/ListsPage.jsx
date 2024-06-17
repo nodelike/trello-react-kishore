@@ -140,7 +140,7 @@ function ListsPage() {
                         overflowX: { md: "scroll", sm: "auto" },
                     }}
                 >
-                    {lists.map((list) => (
+                    {lists.length > 0 || loader ? (lists.map((list) => (
                         <List
                             data={list}
                             key={list.id}
@@ -148,7 +148,7 @@ function ListsPage() {
                             setLists={setLists}
                             setLoaderState={setLoaderState}
                         />
-                    ))}
+                    ))) : (<Typography sx={{textAlign: "center", width: "100%", fontWeight: "500", fontSize: "1.3rem", py: 12}}>No lists available...</Typography>)}
                 </Box>
             </Box>
             <CreationForm
