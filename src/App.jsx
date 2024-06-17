@@ -13,6 +13,10 @@ const router = createBrowserRouter([
         element: <BoardsPage />
     },
     {
+        path: "/boards",
+        element: <BoardsPage />
+    },
+    {
         path: "/lists/:boardId",
         element: <ListsPage />
     },
