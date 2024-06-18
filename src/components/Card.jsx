@@ -1,30 +1,23 @@
 import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashCan } from "@fortawesome/free-solid-svg-icons";
-import { deleteCard } from "../api";
+import { removeCard } from "../features/cardsSlice";
+import { useSelector, useDispatch } from 'react-redux'
 import CardModal from "./CardModal";
 import { Typography, IconButton, Paper } from "@mui/material";
 import toast from "react-hot-toast";
 import theme from "../styles/theme";
 
-function Card({ data, cards, setCards, setLoaderState }) {
+function Card({ data }) {
     const [cardModalState, setModalState] = useState(false);
+    const dispatch = useDispatch();
 
     const handleDeleteCard = async (event) => {
         event.stopPropagation();
-
-        const originalCards = [...cards];
-        const newCards = cards.filter((card) => card.id !== data.id);
-        setCards(newCards);
-
         try {
-            setLoaderState(true);
-            await deleteCard(data.id);
+            dispatch(removeCard({ cardId: data.id, listId: data.idList}));
         } catch (error) {
             toast.error(error.message);
-            setCards(originalCards);
-        } finally {
-            setLoaderState(false);
         }
     };
 
@@ -75,7 +68,6 @@ function Card({ data, cards, setCards, setLoaderState }) {
                     setModalState={setModalState}
                     data={data}
                     key={data.id}
-                    setLoaderState={setLoaderState}
                 />
             )}
         </>

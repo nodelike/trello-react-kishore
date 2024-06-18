@@ -13,30 +13,24 @@ import {
     InputBase,
     Button,
 } from "@mui/material";
-import { getCheckitems, createCheckitem } from "../api";
 import Checkitem from "./Checkitem";
 import toast from "react-hot-toast";
 import theme from "../styles/theme";
+import { useSelector, useDispatch } from 'react-redux';
+import { createNewCheckitem, fetchCheckitems, selectCheckitemsByChecklistId } from "../features/checkitemSlice";
 
-function Checklist({ data, deleteChecklist, setLoaderState }) {
-    const [checkitems, setCheckitems] = useState([]);
+function Checklist({ data, deleteChecklist }) {
+    const checkitems = useSelector(selectCheckitemsByChecklistId(data.id));
     const [percentageCompleted, setPercentageCompleted] = useState(0);
+    const dispatch = useDispatch();
 
     useEffect(() => {
-        const fetchCheckitems = async () => {
-            try {
-                setLoaderState(true);
-                let checkItems = await getCheckitems(data.id);
-                setCheckitems(checkItems);
-                updateProgressBar(checkItems);
-            } catch (error) {
-                toast.error(error.message);
-            } finally {
-                setLoaderState(false);
-            }
-        };
-        fetchCheckitems();
-    }, []);
+        dispatch(fetchCheckitems(data.id));
+    }, [data.id, dispatch]);
+
+    useEffect(() => {
+        updateProgressBar(checkitems);
+    }, [checkitems]);
 
     const updateProgressBar = (items) => {
         try {
@@ -58,14 +52,9 @@ function Checklist({ data, deleteChecklist, setLoaderState }) {
         let checkitemName = event.target.checkitemName.value;
         try {
             if (checkitemName.length > 2) {
-                setLoaderState(true);
                 event.target.checkitemName.value = "";
-                let createdCheckitems = await createCheckitem(
-                    checkitemName,
-                    data.id
-                );
-                setCheckitems([createdCheckitems, ...checkitems]);
-                updateProgressBar([createdCheckitems, ...checkitems]);
+                await dispatch(createNewCheckitem({checkitemName, checklistId: data.id}))
+                updateProgressBar(checkitems)
             } else {
                 throw new Error(
                     "Checkitem name should be more than 2 characters."
@@ -73,8 +62,6 @@ function Checklist({ data, deleteChecklist, setLoaderState }) {
             }
         } catch (error) {
             toast.error(error.message);
-        } finally {
-            setLoaderState(false);
         }
     };
 
@@ -162,7 +149,6 @@ function Checklist({ data, deleteChecklist, setLoaderState }) {
                         key={checkitem.id}
                         data={checkitem}
                         checkitems={checkitems}
-                        setCheckitems={setCheckitems}
                         cardId={data.idCard}
                         updateProgressBar={updateProgressBar}
                     />

@@ -1,54 +1,38 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashCan } from "@fortawesome/free-solid-svg-icons";
-import { deleteCheckitem, updateCheckitem } from "../api";
 import toast from "react-hot-toast";
 import Toast from "./shared/Toast";
 import { Box, Checkbox, IconButton, Typography } from "@mui/material";
 import theme from "../styles/theme";
+import { useSelector, useDispatch } from 'react-redux';
+import { modifyCheckitem, removeCheckitem, selectCheckitemsByChecklistId } from "../features/checkitemSlice";
 
-function Checkitem({
-    data,
-    cardId,
-    checkitems,
-    setCheckitems,
-    updateProgressBar,
-}) {
-    const handleDeleteCheckitem = async (checkitemId) => {
-        const originalCheckitems = [...checkitems];
-        const newCheckitems = checkitems.filter(
-            (checkitem) => checkitem.id !== checkitemId
-        );
-        setCheckitems(newCheckitems);
-        updateProgressBar(newCheckitems);
+function Checkitem({ data, cardId, updateProgressBar }) {
+    const checkitems = useSelector(selectCheckitemsByChecklistId(data.idChecklist));
+    const dispatch = useDispatch();
 
+    useEffect(() => {
+        updateProgressBar(checkitems);
+    }, [checkitems, updateProgressBar]);
+
+    const handleDeleteCheckitem = async () => {
         try {
-            await deleteCheckitem(data.id, data.idChecklist);
+            await dispatch(removeCheckitem({ checkitemId: data.id, checklistId: data.idChecklist}));
+            // `checkitems` will be updated due to Redux state change, which triggers useEffect
         } catch (error) {
             toast.error(error.message);
-            setCheckitems(originalCheckitems);
-            updateProgressBar(originalCheckitems);
         }
     };
 
-    const handleUpdateCheckitem = async (event, id) => {
+    const handleUpdateCheckitem = async (event) => {
         const checkState = event.target.checked ? "complete" : "incomplete";
 
-        const originalCheckitems = [...checkitems];
-        const updatedList = checkitems.map((checkitem) =>
-            checkitem.id === id
-                ? { ...checkitem, state: checkState }
-                : checkitem
-        );
-        setCheckitems(updatedList);
-        updateProgressBar(updatedList);
-
         try {
-            await updateCheckitem(cardId, id, checkState);
+            await dispatch(modifyCheckitem({cardId, checklistId: data.idChecklist, checkitemId: data.id, checkState}));
+            // `checkitems` will be updated due to Redux state change, which triggers useEffect
         } catch (error) {
             toast.error(error.message);
-            setCheckitems(originalCheckitems);
-            updateProgressBar(originalCheckitems);
         }
     };
 
@@ -69,7 +53,7 @@ function Checkitem({
             <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                 <Checkbox
                     checked={data.state === "complete"}
-                    onChange={(event) => handleUpdateCheckitem(event, data.id)}
+                    onChange={handleUpdateCheckitem}
                     sx={{
                         color: "white",
                         "&.Mui-checked": {
@@ -80,7 +64,7 @@ function Checkitem({
                 <Typography>{data.name}</Typography>
             </Box>
             <IconButton
-                onClick={() => handleDeleteCheckitem(data.id)}
+                onClick={handleDeleteCheckitem}
                 sx={{
                     color: theme.palette.primary.delete,
                     "&:hover": {

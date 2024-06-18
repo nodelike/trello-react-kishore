@@ -70,7 +70,6 @@ export const deleteChecklist = async (checklistId) => {
 
 export const deleteCheckitem = async (checkitemId, checklistId) => {
     let deletedCheckitem = await axios.delete(`https://api.trello.com/1/checklists/${checklistId}/checkItems/${checkitemId}?key=${api}&token=${token}`)
-    console.log(deletedCheckitem);
     return deletedCheckitem.data;
 }
 

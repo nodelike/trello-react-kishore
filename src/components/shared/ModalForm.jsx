@@ -13,6 +13,7 @@ import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import theme from "../../styles/theme";
 
 function CreationForm({ state, setState, name, onSubmit }) {
+    
     return (
         <Dialog open={!state} onClose={() => setState(true)}>
             <DialogTitle
@@ -50,7 +51,7 @@ function CreationForm({ state, setState, name, onSubmit }) {
                     <TextField
                         autoFocus
                         margin="dense"
-                        id="boardName"
+                        id={`${name}Name`}
                         label={`${name} title`}
                         type="text"
                         fullWidth

@@ -24,6 +24,7 @@ const LoaderContainer = styled(Box)({
   alignItems: 'center',
   justifyContent: 'center',
   width: '100%',
+  zIndex: 1300
 });
 
 const LoaderDot = styled(Box)(({ delay }) => ({

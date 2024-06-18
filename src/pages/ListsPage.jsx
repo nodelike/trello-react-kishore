@@ -1,63 +1,53 @@
 import React, { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
-import {
-    Box,
-    Container,
-    Typography,
-    Button,
-    IconButton,
-    CircularProgress,
-    Grid,
-} from "@mui/material";
+import { Link } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { Box, Typography, Button, IconButton, Grid } from "@mui/material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
-import { getLists, createList } from "../api";
 import List from "../components/List";
 import CreationForm from "../components/shared/ModalForm";
 import Loader from "../components/shared/Loader";
 import Toast from "../components/shared/Toast";
 import toast from "react-hot-toast";
 import theme from "../styles/theme";
+import {
+    createNewList,
+    fetchLists,
+    selectLists,
+} from "../features/listsSlice";
+import { selectLoader } from "../features/loaderSlice";
+import { selectSelectedBoard } from "../features/listsSlice";
 
 function ListsPage() {
-    const { boardId } = useParams();
-    const [lists, setLists] = useState([]);
+    const selectedBoard = useSelector(selectSelectedBoard);
+    const lists = useSelector(selectLists);
+    const loader = useSelector(selectLoader);
     const [formState, setFormState] = useState(true);
-    const [loader, setLoaderState] = useState(true);
+    const dispatch = useDispatch();
 
     useEffect(() => {
-        const fetchLists = async () => {
-            try {
-                setLoaderState(true);
-                const listsData = await getLists(boardId);
-                setLists(listsData);
-            } catch (error) {
-                toast.error(error.message);
-            } finally {
-                setLoaderState(false);
-            }
-        };
-        fetchLists();
-    }, [boardId]);
+        if (selectedBoard.id) {
+            dispatch(fetchLists(selectedBoard.id));
+        }
+    }, [dispatch, selectedBoard.id]);
 
     const handleSubmit = async (event) => {
         event.preventDefault();
 
-        const listName = event.target.boardName.value;
+        const listName = event.target.listName.value;
         try {
             if (listName.length > 2) {
-                event.target.boardName.value = "";
-
-                const createdList = await createList(listName, boardId);
-                setLists([createdList, ...lists]);
+                event.target.listName.value = "";
+                await dispatch(
+                    createNewList({ listName, boardId: selectedBoard.id })
+                );
+                setFormState(true);
                 toast.success(`${listName} created successfully!`);
             } else {
                 throw new Error("List name should be more than 2 characters.");
             }
         } catch (error) {
             toast.error(error.message);
-        } finally {
-            setFormState(true);
         }
     };
 
@@ -102,7 +92,7 @@ function ListsPage() {
                             }}
                             gutterBottom
                         >
-                            Lists
+                            {selectedBoard.name}
                         </Typography>
                     </Grid>
                     <Grid item>
@@ -140,21 +130,27 @@ function ListsPage() {
                         overflowX: { md: "scroll", sm: "auto" },
                     }}
                 >
-                    {lists.length > 0 || loader ? (lists.map((list) => (
-                        <List
-                            data={list}
-                            key={list.id}
-                            lists={lists}
-                            setLists={setLists}
-                            setLoaderState={setLoaderState}
-                        />
-                    ))) : (<Typography sx={{textAlign: "center", width: "100%", fontWeight: "500", fontSize: "1.3rem", py: 12}}>No lists available...</Typography>)}
+                    {lists && lists.length > 0 ? (
+                        lists.map((list) => <List data={list} key={list.id} />)
+                    ) : (
+                        <Typography
+                            sx={{
+                                textAlign: "center",
+                                width: "100%",
+                                fontWeight: "500",
+                                fontSize: "1.3rem",
+                                py: 12,
+                            }}
+                        >
+                            No lists available...
+                        </Typography>
+                    )}
                 </Box>
             </Box>
             <CreationForm
                 state={formState}
                 setState={setFormState}
-                name="List"
+                name="list"
                 onSubmit={handleSubmit}
             />
             {loader && <Loader />}

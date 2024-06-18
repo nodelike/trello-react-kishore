@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashCan, faPlus } from "@fortawesome/free-solid-svg-icons";
-import { getCards, createCard, deleteList } from "../api";
 import Card from "./Card";
 import toast from "react-hot-toast";
 import Toast from "./shared/Toast";
@@ -14,38 +13,24 @@ import {
     Paper,
 } from "@mui/material";
 import theme from "../styles/theme";
+import { createNewCard, selectCardsByListId } from "../features/cardsSlice";
+import { useSelector, useDispatch } from 'react-redux';
+import { fetchCards } from "../features/cardsSlice";
+import { removeList } from "../features/listsSlice";
 
-function List({ data, lists, setLists, setLoaderState }) {
-    const [cards, setCards] = useState([]);
+function List({ data }) {
+    const cards = useSelector(selectCardsByListId(data.id));
+    const dispatch = useDispatch();
 
     useEffect(() => {
-        const fetchCards = async () => {
-            try {
-                setLoaderState(true);
-                const cardsData = await getCards(data.id);
-                setCards(cardsData);
-            } catch (error) {
-                toast.error(error.message);
-            } finally {
-                setLoaderState(false);
-            }
-        };
-        fetchCards();
-    }, [data.id, setLoaderState]);
+       dispatch(fetchCards(data.id));
+    }, [dispatch, data.id]);
 
     const handleDeleteList = async () => {
-        const originalList = [...lists];
-        const newList = lists.filter((list) => list.id !== data.id);
-        setLists(newList);
-
         try {
-            setLoaderState(true);
-            await deleteList(data.id);
+            dispatch(removeList(data.id));
         } catch (error) {
             toast.error(error.message);
-            setLists(originalList);
-        } finally {
-            setLoaderState(false);
         }
     };
 
@@ -55,18 +40,14 @@ function List({ data, lists, setLists, setLoaderState }) {
         const cardName = event.target.cardName.value;
         try {
             if (cardName.length > 2) {
-                setLoaderState(true);
                 event.target.cardName.value = "";
-                const createdCard = await createCard(cardName, data.id);
-                setCards([createdCard, ...cards]);
+                await dispatch(createNewCard({ cardName, listId: data.id }));
                 toast.success(`${cardName} created successfully!`);
             } else {
                 throw new Error("Card name should be more than 2 characters.");
             }
         } catch (error) {
             toast.error(error.message);
-        } finally {
-            setLoaderState(false);
         }
     };
 
@@ -119,9 +100,6 @@ function List({ data, lists, setLists, setLoaderState }) {
                     <Card
                         data={card}
                         key={card.id}
-                        cards={cards}
-                        setCards={setCards}
-                        setLoaderState={setLoaderState}
                     />
                 ))}
             </Box>
