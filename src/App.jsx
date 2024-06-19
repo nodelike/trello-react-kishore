@@ -8,6 +8,7 @@ import { ThemeProvider } from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import theme from './styles/theme';
 import Navbar from './components/shared/Navbar';
+import ErrorPage from './pages/ErrorPage';
 
 const router = createBrowserRouter([
   {
@@ -21,6 +22,10 @@ const router = createBrowserRouter([
   {
     path: "/boards/:boardId",
     element: <ListsPage />
+  },
+  {
+    path: "*",
+    element: <ErrorPage />
   },
 ]);
 
