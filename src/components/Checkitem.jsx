@@ -8,18 +8,18 @@ import theme from "../styles/theme";
 import { useSelector, useDispatch } from 'react-redux';
 import { modifyCheckitem, removeCheckitem, selectCheckitemsByChecklistId } from "../features/checkitemSlice";
 
-function Checkitem({ data, cardId, updateProgressBar }) {
+function Checkitem({ checkitemData, updateProgressBar }) {
+    const { data, cardId } = checkitemData;
     const checkitems = useSelector(selectCheckitemsByChecklistId(data.idChecklist));
     const dispatch = useDispatch();
 
     useEffect(() => {
         updateProgressBar(checkitems);
-    }, [checkitems, updateProgressBar]);
+    }, [checkitems] );
 
     const handleDeleteCheckitem = async () => {
         try {
             await dispatch(removeCheckitem({ checkitemId: data.id, checklistId: data.idChecklist}));
-            // `checkitems` will be updated due to Redux state change, which triggers useEffect
         } catch (error) {
             toast.error(error.message);
         }
@@ -30,7 +30,6 @@ function Checkitem({ data, cardId, updateProgressBar }) {
 
         try {
             await dispatch(modifyCheckitem({cardId, checklistId: data.idChecklist, checkitemId: data.id, checkState}));
-            // `checkitems` will be updated due to Redux state change, which triggers useEffect
         } catch (error) {
             toast.error(error.message);
         }

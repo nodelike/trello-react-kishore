@@ -8,47 +8,43 @@ const initialState = {
     lists: [],
 };
 
-export const fetchLists = createAsyncThunk(
-    "lists/fetchLists",
-    async (boardId, thunkAPI) => {
+export const fetchLists = createAsyncThunk( "lists/fetchLists",  async (boardId, { dispatch }) => {
         try {
-            thunkAPI.dispatch(showLoader());
+            dispatch(showLoader());
             const listsData = await getLists(boardId);
             return listsData;
         } catch (error) {
             throw error;
         } finally {
-            thunkAPI.dispatch(hideLoader());
+            dispatch(hideLoader());
         }
     }
 );
 
 export const createNewList = createAsyncThunk(
     "lists/createList",
-    async ({ listName, boardId }, thunkAPI) => {
+    async ({ listName, boardId }, { dispatch }) => {
         try {
-            thunkAPI.dispatch(showLoader());
+            dispatch(showLoader());
             const createdList = await createList(listName, boardId);
             return createdList;
         } catch (error) {
             throw error;
         } finally {
-            thunkAPI.dispatch(hideLoader());
+            dispatch(hideLoader());
         }
     }
 );
 
-export const removeList = createAsyncThunk(
-    "lists/deleteList",
-    async (listId, thunkAPI) => {
+export const removeList = createAsyncThunk( "lists/deleteList", async (listId, { dispatch }) => {
         try {
-            thunkAPI.dispatch(showLoader());
+            dispatch(showLoader());
             const deletedList = await deleteList(listId);
             return deletedList;
         } catch (error) {
             throw error;
         } finally {
-            thunkAPI.dispatch(hideLoader());
+            dispatch(hideLoader());
         }
     }
 );

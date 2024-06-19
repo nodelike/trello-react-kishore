@@ -7,24 +7,39 @@ const initialState = {
 };
 
 export const fetchCards = createAsyncThunk('cards/getCards', async (listId, { dispatch }) => {
-    dispatch(showLoader());
-    const cardsData = await getCards(listId);
-    dispatch(hideLoader());
-    return { listId, cardsData };
+    try {
+        dispatch(showLoader());
+        const cardsData = await getCards(listId);
+        return { listId, cardsData };
+    } catch (error) {
+        throw error;
+    } finally {
+        dispatch(hideLoader());
+    }
 });
 
 export const createNewCard = createAsyncThunk('cards/createCard', async ({ cardName, listId }, { dispatch }) => {
-    dispatch(showLoader());
-    const createdCard = await createCard(cardName, listId);
-    dispatch(hideLoader());
-    return { listId, createdCard };
+    try {
+        dispatch(showLoader());
+        const createdCard = await createCard(cardName, listId);
+        return { listId, createdCard };
+    } catch (error) {
+        throw error;
+    } finally {
+        dispatch(hideLoader());
+    }
 });
 
 export const removeCard = createAsyncThunk('cards/deleteCard', async ({ cardId, listId }, { dispatch }) => {
-    dispatch(showLoader());
-    await deleteCard(cardId);
-    dispatch(hideLoader());
-    return { cardId , listId };
+    try {
+        dispatch(showLoader());
+        await deleteCard(cardId);
+        return { cardId , listId };
+    } catch (error) {
+        throw error;
+    } finally {
+        dispatch(hideLoader());
+    }
 });
 
 const cardsSlice = createSlice({

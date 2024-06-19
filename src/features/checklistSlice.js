@@ -7,24 +7,39 @@ const initialState = {
 };
 
 export const fetchChecklists = createAsyncThunk('checklists/getChecklists', async (cardId, { dispatch } ) => {
-    dispatch(showLoader());
-    const checklistsData = await getChecklists(cardId);
-    dispatch(hideLoader());
-    return { cardId, checklistsData };
+    try {
+        dispatch(showLoader());
+        const checklistsData = await getChecklists(cardId);
+        return { cardId, checklistsData };
+    } catch (error) {
+        throw error;
+    } finally {
+        dispatch(hideLoader());
+    }
 });
 
 export const createNewChecklist = createAsyncThunk('checklists/createChecklist', async ({ cardName, cardId }, { dispatch }) => {
-    dispatch(showLoader());
-    const createdChecklist = await createChecklist(cardName, cardId);
-    dispatch(hideLoader());
-    return { cardId, createdChecklist };
+    try {
+        dispatch(showLoader());
+        const createdChecklist = await createChecklist(cardName, cardId);
+        return { cardId, createdChecklist };
+    } catch (error) {
+        throw error;
+    } finally {
+        dispatch(hideLoader());
+    }
 });
 
 export const removeChecklist = createAsyncThunk('checklists/deleteChecklists', async ({ checklistId, cardId }, { dispatch }) => {
-    dispatch(showLoader());
-    await deleteChecklist(checklistId);
-    dispatch(hideLoader());
-    return { checklistId, cardId };
+    try {
+        dispatch(showLoader());
+        await deleteChecklist(checklistId);
+        return { checklistId, cardId };
+    } catch (error) {
+        throw error;
+    } finally {
+        dispatch(hideLoader());
+    }
 });
 
 const checklistSlice = createSlice({

@@ -6,32 +6,28 @@ const initialState = {
   boards: [],
 };
 
-export const fetchBoards = createAsyncThunk(
-  "boards/fetchBoards",
-  async (_, thunkAPI) => {
+export const fetchBoards = createAsyncThunk( "boards/fetchBoards", async (_, { dispatch }) => {
     try {
-      thunkAPI.dispatch(showLoader());
+      dispatch(showLoader());
       const boardsData = await getAllBoards();
       return boardsData;
     } catch (error) {
       throw error;
     } finally {
-      thunkAPI.dispatch(hideLoader());
+      dispatch(hideLoader());
     }
   }
 );
 
-export const createNewBoard = createAsyncThunk(
-  "boards/createNewBoard",
-  async (boardName, thunkAPI) => {
+export const createNewBoard = createAsyncThunk( "boards/createNewBoard", async (boardName, { dispatch }) => {
     try {
-      thunkAPI.dispatch(showLoader());
+      dispatch(showLoader());
       const createdBoard = await createBoard(boardName);
       return createdBoard;
     } catch (error) {
       throw error;
     } finally {
-      thunkAPI.dispatch(hideLoader());
+      dispatch(hideLoader());
     }
   }
 );

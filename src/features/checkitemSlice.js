@@ -7,31 +7,51 @@ const initialState = {
 };
 
 export const fetchCheckitems = createAsyncThunk('checkitems/getCheckitems', async (checklistId, { dispatch }) => {
-    dispatch(showLoader());
-    const checkitemsData = await getCheckitems(checklistId);
-    dispatch(hideLoader());
-    return { checklistId, checkitemsData };
+    try {
+        dispatch(showLoader());
+        const checkitemsData = await getCheckitems(checklistId);
+        return { checklistId, checkitemsData };
+    } catch (error) {
+        throw error
+    } finally {
+        dispatch(hideLoader());
+    }
 });
 
 export const createNewCheckitem = createAsyncThunk('checkitems/createCheckitem', async ({ checkitemName, checklistId }, { dispatch }) => {
-    dispatch(showLoader());
-    const createdCheckitem = await createCheckitem(checkitemName, checklistId);
-    dispatch(hideLoader());
-    return { checklistId, createdCheckitem };
+    try {
+        dispatch(showLoader());
+        const createdCheckitem = await createCheckitem(checkitemName, checklistId);
+        return { checklistId, createdCheckitem };
+    } catch (error) {
+        throw error;
+    } finally {
+        dispatch(hideLoader());
+    }
 });
 
 export const modifyCheckitem = createAsyncThunk('checkitem/updateCheckitem', async ({ cardId, checklistId, checkitemId, checkState }, { dispatch }) => {
-    dispatch(showLoader());
-    await updateCheckitem(cardId, checkitemId, checkState);
-    dispatch(hideLoader());
-    return { checkitemId, checklistId, checkState };
+    try {
+        dispatch(showLoader());
+        await updateCheckitem(cardId, checkitemId, checkState);
+        return { checkitemId, checklistId, checkState };
+    } catch (error) {
+        throw error;
+    } finally {
+        dispatch(hideLoader());
+    }
 })
 
 export const removeCheckitem = createAsyncThunk('checkitems/deleteCheckitem', async ({ checkitemId, checklistId }, { dispatch }) => {
-    dispatch(showLoader());
-    await deleteCheckitem(checkitemId, checklistId);
-    dispatch(hideLoader());
-    return { checkitemId, checklistId };
+    try {
+        dispatch(showLoader());
+        await deleteCheckitem(checkitemId, checklistId);
+        return { checkitemId, checklistId };
+    } catch (error) {
+        throw error;
+    } finally {
+        dispatch(hideLoader());
+    }
 });
 
 const checkitemsSlice = createSlice({

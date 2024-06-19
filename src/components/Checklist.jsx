@@ -54,7 +54,6 @@ function Checklist({ data, deleteChecklist }) {
             if (checkitemName.length > 2) {
                 event.target.checkitemName.value = "";
                 await dispatch(createNewCheckitem({checkitemName, checklistId: data.id}))
-                updateProgressBar(checkitems)
             } else {
                 throw new Error(
                     "Checkitem name should be more than 2 characters."
@@ -147,9 +146,7 @@ function Checklist({ data, deleteChecklist }) {
                 {checkitems.map((checkitem) => (
                     <Checkitem
                         key={checkitem.id}
-                        data={checkitem}
-                        checkitems={checkitems}
-                        cardId={data.idCard}
+                        checkitemData={{data:checkitem, cardId: data.idCard}}
                         updateProgressBar={updateProgressBar}
                     />
                 ))}
