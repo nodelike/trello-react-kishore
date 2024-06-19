@@ -3,7 +3,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Container, Grid, Typography, Button, Paper } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { fetchBoards, createNewBoard, selectBoards } from '../features/boardsSlice';
-import { setSelectedBoard } from '../features/listsSlice';
 import CreationForm from '../components/shared/ModalForm';
 import Loader from '../components/shared/Loader';
 import Toast from '../components/shared/Toast';
@@ -19,12 +18,15 @@ function BoardsPage() {
   const [formState, setFormState] = useState(true);
 
   useEffect(() => {
-    dispatch(fetchBoards());
+    try {
+        dispatch(fetchBoards());
+    } catch (error) {
+        toast.error(error.message);
+    }
   }, [dispatch]);
 
   const handleBoardClick = (board) => {
     navigate(`/boards/${board.id}`);
-    dispatch(setSelectedBoard(board));
   };
 
   const handleSubmit = async (event) => {

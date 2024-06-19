@@ -25,7 +25,11 @@ function Checklist({ data, deleteChecklist }) {
     const dispatch = useDispatch();
 
     useEffect(() => {
-        dispatch(fetchCheckitems(data.id));
+        try {
+            dispatch(fetchCheckitems(data.id));
+        } catch (error) {
+            toast.error(error.message);
+        }
     }, [data.id, dispatch]);
 
     useEffect(() => {

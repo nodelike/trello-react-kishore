@@ -8,6 +8,11 @@ export const getAllBoards = async () => {
     return boardsResponse.data;
 }
 
+export async function getBoard(boardId) {
+    const response = await axios.get(`https://api.trello.com/1/boards/${boardId}?key=${api}&token=${token}`);
+    return response.data;
+}
+
 export const createBoard = async (boardName) => {
     let createdBoard = await axios.post(`https://api.trello.com/1/boards/?name=${boardName}&key=${api}&token=${token}`);
     return createdBoard.data;
@@ -76,6 +81,5 @@ export const deleteCheckitem = async (checkitemId, checklistId) => {
 export const updateCheckitem = async (cardId, checkitemId, state) => {
     let stateQuery = "state=" + state;
     let updatedCheckitem = await axios.put(`https://api.trello.com/1/cards/${cardId}/checkItem/${checkitemId}?${stateQuery}&key=${api}&token=${token}`)
-    console.log(updatedCheckitem.data);
     return updatedCheckitem.data;
 }

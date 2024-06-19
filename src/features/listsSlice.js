@@ -4,7 +4,6 @@ import { getLists, createList, deleteList } from "../api";
 import { showLoader, hideLoader } from "./loaderSlice";
 
 const initialState = {
-    selectedBoard: {},
     lists: [],
 };
 
@@ -52,12 +51,7 @@ export const removeList = createAsyncThunk( "lists/deleteList", async (listId, {
 const listsSlice = createSlice({
     name: "lists",
     initialState,
-    reducers: {
-        setSelectedBoard: (state, action) => {
-            state.selectedBoard = action.payload;
-            console.log(action.payload);
-        },
-    },
+    reducers: {},
     extraReducers: (builder) => {
         let originalList = [];
         builder
@@ -77,9 +71,6 @@ const listsSlice = createSlice({
     },
 });
 
-export const { setSelectedBoard } = listsSlice.actions;
-
 export const selectLists = (state) => state.lists.lists;
-export const selectSelectedBoard = (state) => state.lists.selectedBoard;
 
 export default listsSlice.reducer;

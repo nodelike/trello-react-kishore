@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { Box, Typography, Button, IconButton, Grid } from "@mui/material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -16,18 +16,31 @@ import {
     selectLists,
 } from "../features/listsSlice";
 import { selectLoader } from "../features/loaderSlice";
-import { selectSelectedBoard } from "../features/listsSlice";
+import { fetchBoard, selectSelectedBoard } from "../features/boardsSlice";
 
 function ListsPage() {
-    const selectedBoard = useSelector(selectSelectedBoard);
+    const { boardId } = useParams();
+    const selectedBoard = useSelector(selectSelectedBoard(boardId));
     const lists = useSelector(selectLists);
     const loader = useSelector(selectLoader);
     const [formState, setFormState] = useState(true);
     const dispatch = useDispatch();
 
     useEffect(() => {
-        if (selectedBoard.id) {
-            dispatch(fetchLists(selectedBoard.id));
+        try {
+            dispatch(fetchBoard(boardId));
+        } catch (error) {
+            toast.error(error.message);
+        }
+    }, [dispatch, boardId])
+
+    useEffect(() => {
+        try {
+            if (selectedBoard.id) {
+                dispatch(fetchLists(selectedBoard.id));
+            }
+        } catch (error) {
+            toast.error(error.message);
         }
     }, [dispatch, selectedBoard.id]);
 

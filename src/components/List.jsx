@@ -23,7 +23,11 @@ function List({ data }) {
     const dispatch = useDispatch();
 
     useEffect(() => {
-       dispatch(fetchCards(data.id));
+        try {
+            dispatch(fetchCards(data.id));
+        } catch (error) {
+            toast.error(error.message);
+        }
     }, [dispatch, data.id]);
 
     const handleDeleteList = async () => {

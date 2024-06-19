@@ -26,7 +26,11 @@ function CardModal({ state, setModalState, data, setLoaderState }) {
     const dispatch = useDispatch();
 
     useEffect(() => {
-        dispatch(fetchChecklists(data.id));
+        try {
+            dispatch(fetchChecklists(data.id));
+        } catch (error) {
+            toast.error(error.message);
+        }
     }, []);
 
     const handleSubmit = async (event) => {

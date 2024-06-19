@@ -1,8 +1,9 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { getAllBoards, createBoard } from "../api";
+import { getAllBoards, createBoard, getBoard } from "../api";
 import { showLoader, hideLoader } from "./loaderSlice";
 
 const initialState = {
+  selectedBoard: {},
   boards: [],
 };
 
@@ -17,6 +18,19 @@ export const fetchBoards = createAsyncThunk( "boards/fetchBoards", async (_, { d
       dispatch(hideLoader());
     }
   }
+);
+
+export const fetchBoard = createAsyncThunk( "boards/fetchBoard", async (boardId, { dispatch }) => {
+  try {
+    dispatch(showLoader());
+    const boardData = await getBoard(boardId)
+    return boardData;
+  } catch (error) {
+    throw error;
+  } finally {
+    dispatch(hideLoader());
+  }
+}
 );
 
 export const createNewBoard = createAsyncThunk( "boards/createNewBoard", async (boardName, { dispatch }) => {
@@ -41,6 +55,9 @@ const boardsSlice = createSlice({
       .addCase(fetchBoards.fulfilled, (state, action) => {
         state.boards = action.payload;
       })
+      .addCase(fetchBoard.fulfilled, (state, action) => {
+        state.selectedBoard = action.payload;
+      })
       .addCase(createNewBoard.fulfilled, (state, action) => {
         state.boards.unshift(action.payload);
       });
@@ -48,5 +65,6 @@ const boardsSlice = createSlice({
 });
 
 export const selectBoards = (state) => state.boards.boards;
+export const selectSelectedBoard = (boardId) => (state) => state.boards.selectedBoard;
 
 export default boardsSlice.reducer;
