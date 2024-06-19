@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Container, Grid, Typography, Button, Paper } from '@mui/material';
+import { Container, Grid, Typography, Button, Paper, Box } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { fetchBoards, createNewBoard, selectBoards } from '../features/boardsSlice';
 import CreationForm from '../components/shared/ModalForm';
@@ -122,6 +122,7 @@ function BoardsPage() {
           ))}
         </Grid>
       </Container>
+      <Box sx={{position: "absolute", bottom: 10, right: 20, fontWeight: "400" , letterSpacing: "2px", color: "#555"}}>Implemented with REDUX</Box>
       <CreationForm
         state={formState}
         setState={setFormState}

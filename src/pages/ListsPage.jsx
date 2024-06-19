@@ -160,6 +160,7 @@ function ListsPage() {
                     )}
                 </Box>
             </Box>
+            <Box sx={{position: "absolute", bottom: 10, right: 20, fontWeight: "400" , letterSpacing: "2px", color: "#444"}}>Implemented with REDUX</Box>
             <CreationForm
                 state={formState}
                 setState={setFormState}
