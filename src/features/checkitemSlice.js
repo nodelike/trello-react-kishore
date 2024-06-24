@@ -4,6 +4,7 @@ import { showLoader, hideLoader } from "./loaderSlice";
 
 const initialState = {
     checkitemsByChecklistId: {},
+    error: ""
 };
 
 export const fetchCheckitems = createAsyncThunk('checkitems/getCheckitems', async (checklistId, { dispatch }) => {
@@ -59,7 +60,6 @@ const checkitemsSlice = createSlice({
     initialState,
     reducers: {},
     extraReducers: (builder) => {
-        let originalList = [];
         builder
             .addCase(fetchCheckitems.fulfilled, (state, action) => {
                 
@@ -71,28 +71,18 @@ const checkitemsSlice = createSlice({
                 }
                 state.checkitemsByChecklistId[action.payload.checklistId].unshift(action.payload.createdCheckitem);
             })
-            .addCase(modifyCheckitem.pending, (state, action) => {
+            .addCase(modifyCheckitem.fulfilled, (state, action) => {
                 const { checkitemId, checklistId, checkState } = action.meta.arg;
-                originalList = [...state.checkitemsByChecklistId[checklistId]];
                 state.checkitemsByChecklistId[checklistId]  = state.checkitemsByChecklistId[checklistId].map((checkitem) =>
                     checkitem.id === checkitemId
                         ? { ...checkitem, state: checkState }
                         : checkitem
                 );
             })
-            .addCase(modifyCheckitem.rejected, (state, action) => {
-                const { checklistId } = action.meta.arg;
-                state.checkitemsByChecklistId[checklistId] = originalList;
-            })
-            .addCase(removeCheckitem.pending, (state, action) => {
+            .addCase(removeCheckitem.fulfilled, (state, action) => {
                 const { checkitemId, checklistId } = action.meta.arg;
-                originalList = [...state.checkitemsByChecklistId[checklistId]];
                 state.checkitemsByChecklistId[checklistId] = state.checkitemsByChecklistId[checklistId].filter((checkitem) => checkitem.id !== checkitemId);
             })
-            .addCase(removeCheckitem.rejected, (state, action) => {
-                const { checklistId } = action.meta.arg;
-                state.checkitemsByChecklistId[checklistId] = originalList;
-            });
     }
 });
 

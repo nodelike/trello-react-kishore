@@ -23,18 +23,21 @@ function List({ data }) {
     const dispatch = useDispatch();
 
     useEffect(() => {
-        try {
-            dispatch(fetchCards(data.id));
-        } catch (error) {
-            toast.error(error.message);
+        const getCards = async () => {
+            try {
+                await dispatch(fetchCards(data.id));
+            } catch (error) {
+                toast.error("Error in fetching lists!");
+            }
         }
-    }, [dispatch, data.id]);
+        getCards();
+    }, [data.id]);
 
     const handleDeleteList = async () => {
         try {
-            dispatch(removeList(data.id));
+            await dispatch(removeList(data.id))
         } catch (error) {
-            toast.error(error.message);
+            toast.error("Error in deleting list!");
         }
     };
 
@@ -51,7 +54,7 @@ function List({ data }) {
                 throw new Error("Card name should be more than 2 characters.");
             }
         } catch (error) {
-            toast.error(error.message);
+            toast.error("Error in creating new list");
         }
     };
 

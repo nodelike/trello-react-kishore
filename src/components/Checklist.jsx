@@ -17,34 +17,39 @@ import Checkitem from "./Checkitem";
 import toast from "react-hot-toast";
 import theme from "../styles/theme";
 import { useSelector, useDispatch } from 'react-redux';
-import { createNewCheckitem, fetchCheckitems, selectCheckitemsByChecklistId } from "../features/checkitemSlice";
+import { createNewCheckitem, modifyCheckitem, removeCheckitem, fetchCheckitems, selectCheckitemsByChecklistId } from "../features/checkitemSlice";
 
 function Checklist({ data, deleteChecklist }) {
     const checkitems = useSelector(selectCheckitemsByChecklistId(data.id));
-    const [percentageCompleted, setPercentageCompleted] = useState(0);
     const dispatch = useDispatch();
 
+    const completedItems = checkitems.filter((item) => item.state === "complete").length;
+    const percentCompletion = checkitems.length > 0 ? Math.round((completedItems /  checkitems.length) * 100) : 0;
+
     useEffect(() => {
+        const getCheckitems = async () => {
+            try {
+                await dispatch(fetchCheckitems(data.id));
+            } catch (error) {
+                toast.error(error.message);
+            }
+        }
+        getCheckitems();
+    }, [data.id]);
+
+    const handleUpdateCheckitem = async (event, checkitemId, checklistId, cardId) => {
+        const checkState = event.target.checked ? "complete" : "incomplete";
+
         try {
-            dispatch(fetchCheckitems(data.id));
+            await dispatch(modifyCheckitem({cardId, checklistId, checkitemId, checkState}));
         } catch (error) {
             toast.error(error.message);
         }
-    }, [data.id, dispatch]);
+    };
 
-    useEffect(() => {
-        updateProgressBar(checkitems);
-    }, [checkitems]);
-
-    const updateProgressBar = (items) => {
+    const handleDeleteCheckitem = async (checkitemId, checklistId) => {
         try {
-            let checkedItemsCount = items.filter(
-                (checkitem) => checkitem.state === "complete"
-            ).length;
-            let completed = items.length
-                ? Math.floor((checkedItemsCount / items.length) * 100)
-                : 0;
-            setPercentageCompleted(completed);
+            await dispatch(removeCheckitem({ checkitemId, checklistId}));
         } catch (error) {
             toast.error(error.message);
         }
@@ -122,11 +127,11 @@ function Checklist({ data, deleteChecklist }) {
                         fontWeight: "bold",
                     }}
                 >
-                    {percentageCompleted}%
+                    {percentCompletion}%
                 </Typography>
                 <LinearProgress
                     variant="determinate"
-                    value={percentageCompleted}
+                    value={percentCompletion}
                     sx={{
                         width: "100%",
                         height: "10px",
@@ -151,7 +156,8 @@ function Checklist({ data, deleteChecklist }) {
                     <Checkitem
                         key={checkitem.id}
                         checkitemData={{data:checkitem, cardId: data.idCard}}
-                        updateProgressBar={updateProgressBar}
+                        deleteCheckitem={handleDeleteCheckitem}
+                        updateCheckitem={handleUpdateCheckitem}
                     />
                 ))}
                 <Box

@@ -47,10 +47,8 @@ const checklistSlice = createSlice({
     initialState,
     reducers: {},
     extraReducers: (builder) => {
-        let originalList = [];
         builder
             .addCase(fetchChecklists.fulfilled, (state, action) => {
-                
                 state.checklistsByCardId[action.payload.cardId] = action.payload.checklistsData;
             })
             .addCase(createNewChecklist.fulfilled, (state, action) => {
@@ -59,15 +57,10 @@ const checklistSlice = createSlice({
                 }
                 state.checklistsByCardId[action.payload.cardId].unshift(action.payload.createdChecklist);
             })
-            .addCase(removeChecklist.pending, (state, action) => {
+            .addCase(removeChecklist.fulfilled, (state, action) => {
                 const { checklistId, cardId } = action.meta.arg;
-                originalList = [...state.checklistsByCardId[cardId]];
                 state.checklistsByCardId[cardId] = state.checklistsByCardId[cardId].filter((checklist) => checklist.id !== checklistId);
             })
-            .addCase(removeChecklist.rejected, (state, action) => {
-                const { cardId } = action.meta.arg;
-                state.checklistsByCardId[cardId] = originalList;
-            });
     }
 });
 

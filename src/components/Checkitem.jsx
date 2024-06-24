@@ -1,39 +1,12 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashCan } from "@fortawesome/free-solid-svg-icons";
-import toast from "react-hot-toast";
 import Toast from "./shared/Toast";
 import { Box, Checkbox, IconButton, Typography } from "@mui/material";
 import theme from "../styles/theme";
-import { useSelector, useDispatch } from 'react-redux';
-import { modifyCheckitem, removeCheckitem, selectCheckitemsByChecklistId } from "../features/checkitemSlice";
 
-function Checkitem({ checkitemData, updateProgressBar }) {
+function Checkitem({ checkitemData, deleteCheckitem, updateCheckitem }) {
     const { data, cardId } = checkitemData;
-    const checkitems = useSelector(selectCheckitemsByChecklistId(data.idChecklist));
-    const dispatch = useDispatch();
-
-    useEffect(() => {
-        updateProgressBar(checkitems);
-    }, [checkitems] );
-
-    const handleDeleteCheckitem = async () => {
-        try {
-            await dispatch(removeCheckitem({ checkitemId: data.id, checklistId: data.idChecklist}));
-        } catch (error) {
-            toast.error(error.message);
-        }
-    };
-
-    const handleUpdateCheckitem = async (event) => {
-        const checkState = event.target.checked ? "complete" : "incomplete";
-
-        try {
-            await dispatch(modifyCheckitem({cardId, checklistId: data.idChecklist, checkitemId: data.id, checkState}));
-        } catch (error) {
-            toast.error(error.message);
-        }
-    };
 
     return (
         <Box
@@ -52,7 +25,7 @@ function Checkitem({ checkitemData, updateProgressBar }) {
             <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                 <Checkbox
                     checked={data.state === "complete"}
-                    onChange={handleUpdateCheckitem}
+                    onChange={(event) => updateCheckitem(event, data.id, data.idChecklist, cardId)}
                     sx={{
                         color: "white",
                         "&.Mui-checked": {
@@ -63,7 +36,7 @@ function Checkitem({ checkitemData, updateProgressBar }) {
                 <Typography>{data.name}</Typography>
             </Box>
             <IconButton
-                onClick={handleDeleteCheckitem}
+                onClick={() => deleteCheckitem(data.id, data.idChecklist)}
                 sx={{
                     color: theme.palette.primary.delete,
                     "&:hover": {

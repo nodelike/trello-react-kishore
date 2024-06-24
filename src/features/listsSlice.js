@@ -53,7 +53,6 @@ const listsSlice = createSlice({
     initialState,
     reducers: {},
     extraReducers: (builder) => {
-        let originalList = [];
         builder
             .addCase(fetchLists.fulfilled, (state, action) => {
                 state.lists = action.payload;
@@ -61,13 +60,9 @@ const listsSlice = createSlice({
             .addCase(createNewList.fulfilled, (state, action) => {
                 state.lists.unshift(action.payload);
             })
-            .addCase(removeList.pending, (state, action) => {
-                originalList = [...state.lists];
+            .addCase(removeList.fulfilled, (state, action) => {
                 state.lists = state.lists.filter( (list) => list.id !== action.meta.arg);
             })
-            .addCase(removeList.rejected, (state) => {
-                state.lists = originalList;
-            });
     },
 });
 

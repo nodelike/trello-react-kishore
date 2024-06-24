@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Container, Grid, Typography, Button, Paper, Box } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { fetchBoards, createNewBoard, selectBoards } from '../features/boardsSlice';
-import CreationForm from '../components/shared/ModalForm';
+import ModalForm from '../components/shared/ModalForm';
 import Loader from '../components/shared/Loader';
 import Toast from '../components/shared/Toast';
 import toast from 'react-hot-toast';
@@ -15,39 +15,22 @@ function BoardsPage() {
   const loader = useSelector(selectLoader);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [formState, setFormState] = useState(true);
 
   useEffect(() => {
-    try {
-        dispatch(fetchBoards());
-    } catch (error) {
-        toast.error(error.message);
+    const getBoards = async () => {
+      try {
+          dispatch(fetchBoards());
+      } catch (error) {
+          toast.error(error.message);
+      }
     }
-  }, [dispatch]);
+    getBoards();
+  }, []);
 
   const handleBoardClick = (board) => {
     navigate(`/boards/${board.id}`);
   };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    let boardName = event.target.boardName.value;
-    try {
-      if (boards.length === 10) {
-        throw new Error('Board creation limit exceeded!');
-      }
-      if (boardName.length > 2) {
-        event.target.boardName.value = '';
-        dispatch(createNewBoard(boardName));
-        setFormState(true);
-        toast.success(`${boardName} created successfully!`);
-      } else {
-        throw new Error('Board name should be more than 2 characters.');
-      }
-    } catch (error) {
-      toast.error(error.message);
-    }
-  };
 
   return (
     <>
@@ -72,25 +55,8 @@ function BoardsPage() {
             </Typography>
           </Grid>
           <Grid item>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={() => setFormState(false)}
-              sx={{
-                fontWeight: "bold",
-                borderRadius: "40px",
-                py: 2,
-                px: 4,
-                backgroundColor: theme.palette.primary.accent,
-                color: theme.palette.primary.dark,
-                "&:hover": {
-                  backgroundColor: theme.palette.primary.accent,
-                  color: theme.palette.primary.dark,
-                },
-              }}
-            >
-              + Create Board
-            </Button>
+            {boards.length != 10 && (<ModalForm name="Board"/>)}
+          
           </Grid>
         </Grid>
         <Grid container spacing={4} sx={{ mt: 2 }}>
@@ -123,12 +89,6 @@ function BoardsPage() {
         </Grid>
       </Container>
       <Box sx={{position: "absolute", bottom: 10, right: 20, fontWeight: "400" , letterSpacing: "2px", color: "#555"}}>Implemented with REDUX</Box>
-      <CreationForm
-        state={formState}
-        setState={setFormState}
-        name="Board"
-        onSubmit={(event) => handleSubmit(event)}
-      />
       {loader && <Loader />}
       <Toast />
     </>

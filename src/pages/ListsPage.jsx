@@ -5,7 +5,7 @@ import { Box, Typography, Button, IconButton, Grid } from "@mui/material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import List from "../components/List";
-import CreationForm from "../components/shared/ModalForm";
+import ModalForm from "../components/shared/ModalForm";
 import Loader from "../components/shared/Loader";
 import Toast from "../components/shared/Toast";
 import toast from "react-hot-toast";
@@ -23,7 +23,6 @@ function ListsPage() {
     const selectedBoard = useSelector(selectSelectedBoard(boardId));
     const lists = useSelector(selectLists);
     const loader = useSelector(selectLoader);
-    const [formState, setFormState] = useState(true);
     const dispatch = useDispatch();
 
     useEffect(() => {
@@ -32,17 +31,17 @@ function ListsPage() {
         } catch (error) {
             toast.error(error.message);
         }
-    }, [dispatch, boardId])
+    }, [boardId])
 
     useEffect(() => {
         try {
-            if (selectedBoard.id) {
-                dispatch(fetchLists(selectedBoard.id));
+            if (boardId) {
+                dispatch(fetchLists(boardId));
             }
         } catch (error) {
             toast.error(error.message);
         }
-    }, [dispatch, selectedBoard.id]);
+    }, [boardId]);
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -51,9 +50,7 @@ function ListsPage() {
         try {
             if (listName.length > 2) {
                 event.target.listName.value = "";
-                await dispatch(
-                    createNewList({ listName, boardId: selectedBoard.id })
-                );
+                await dispatch(createNewList({ listName, boardId }));
                 setFormState(true);
                 toast.success(`${listName} created successfully!`);
             } else {
@@ -109,26 +106,7 @@ function ListsPage() {
                         </Typography>
                     </Grid>
                     <Grid item>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            onClick={() => setFormState(false)}
-                            sx={{
-                                fontWeight: "bold",
-                                borderRadius: "40px",
-                                py: 2,
-                                px: 4,
-                                backgroundColor: theme.palette.primary.accent,
-                                color: theme.palette.primary.dark,
-                                "&:hover": {
-                                    backgroundColor:
-                                        theme.palette.primary.accent,
-                                    color: theme.palette.primary.dark,
-                                },
-                            }}
-                        >
-                            + Create List
-                        </Button>
+                        <ModalForm name="List" onSubmit={handleSubmit} />
                     </Grid>
                 </Grid>
                 <Box
@@ -161,12 +139,6 @@ function ListsPage() {
                 </Box>
             </Box>
             <Box sx={{position: "absolute", bottom: 10, right: 20, fontWeight: "400" , letterSpacing: "2px", color: "#444"}}>Implemented with REDUX</Box>
-            <CreationForm
-                state={formState}
-                setState={setFormState}
-                name="list"
-                onSubmit={handleSubmit}
-            />
             {loader && <Loader />}
             <Toast />
         </>

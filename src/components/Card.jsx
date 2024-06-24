@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashCan } from "@fortawesome/free-solid-svg-icons";
 import { removeCard } from "../features/cardsSlice";
-import { useSelector, useDispatch } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import CardModal from "./CardModal";
 import { Typography, IconButton, Paper } from "@mui/material";
 import toast from "react-hot-toast";
@@ -15,9 +15,9 @@ function Card({ data }) {
     const handleDeleteCard = async (event) => {
         event.stopPropagation();
         try {
-            dispatch(removeCard({ cardId: data.id, listId: data.idList}));
+            await dispatch(removeCard({ cardId: data.id, listId: data.idList}));
         } catch (error) {
-            toast.error(error.message);
+            toast.error("Error in deleting card!");
         }
     };
 

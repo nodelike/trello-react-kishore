@@ -26,11 +26,14 @@ function CardModal({ state, setModalState, data, setLoaderState }) {
     const dispatch = useDispatch();
 
     useEffect(() => {
-        try {
-            dispatch(fetchChecklists(data.id));
-        } catch (error) {
-            toast.error(error.message);
+        const getChecklists = async () => {
+            try {
+                await dispatch(fetchChecklists(data.id));
+            } catch (error) {
+                toast.error("Error in fetching checklists");
+            }
         }
+        getChecklists();
     }, []);
 
     const handleSubmit = async (event) => {
@@ -46,7 +49,7 @@ function CardModal({ state, setModalState, data, setLoaderState }) {
                 throw new Error("Checklist name should be more than 2 characters.");
             }
         } catch (error) {
-            toast.error(error.message);
+            toast.error("Error in creating checklist");
         }
     };
 
@@ -54,7 +57,7 @@ function CardModal({ state, setModalState, data, setLoaderState }) {
         try {
             await dispatch(removeChecklist({ checklistId, cardId: data.id }));
         } catch (error) {
-            toast.error(error.message);
+            toast.error("Error in handling checklist!");
         }
     };
 

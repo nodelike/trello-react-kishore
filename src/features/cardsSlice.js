@@ -47,7 +47,6 @@ const cardsSlice = createSlice({
     initialState,
     reducers: {},
     extraReducers: (builder) => {
-        let originalList = [];
         builder
             .addCase(fetchCards.fulfilled, (state, action) => {
                 state.cardsByListId[action.payload.listId] = action.payload.cardsData;
@@ -58,16 +57,10 @@ const cardsSlice = createSlice({
                 }
                 state.cardsByListId[action.payload.listId].unshift(action.payload.createdCard);
             })
-
-            .addCase(removeCard.pending, (state, action) => {
+            .addCase(removeCard.fulfilled, (state, action) => {
                 const { cardId, listId } = action.meta.arg;
-                originalList = [...state.cardsByListId[listId]];
                 state.cardsByListId[listId] = state.cardsByListId[listId].filter((card) => card.id !== cardId);
             })
-            .addCase(removeCard.rejected, (state, action) => {
-                const { listId } = action.meta.arg;
-                state.cardsByListId[listId] = originalList;
-            });
     }
 });
 
