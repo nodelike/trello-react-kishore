@@ -31,7 +31,7 @@ function List({ data }) {
             }
         }
         getCards();
-    }, [data.id]);
+    }, []);
 
     const handleDeleteList = async () => {
         try {

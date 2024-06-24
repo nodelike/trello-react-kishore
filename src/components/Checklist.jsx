@@ -35,7 +35,7 @@ function Checklist({ data, deleteChecklist }) {
             }
         }
         getCheckitems();
-    }, [data.id]);
+    }, []);
 
     const handleUpdateCheckitem = async (event, checkitemId, checklistId, cardId) => {
         const checkState = event.target.checked ? "complete" : "incomplete";
